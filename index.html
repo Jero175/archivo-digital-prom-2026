@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archivo Digital — Prom 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Indicador de progreso de lectura -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#portada" class="nav-brand">
+      <span class="nav-brand-mark">AD</span>
+      <span class="nav-brand-text">Archivo&nbsp;Digital</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#portada" class="nav-link" data-nav>Inicio</a>
+      <a href="#microbit" class="nav-link" data-nav>Micro:bit</a>
+      <a href="#python" class="nav-link" data-nav>Python</a>
+      <a href="#seguidor" class="nav-link" data-nav>Seguidor de línea</a>
+      <a href="#cinta" class="nav-link" data-nav>Cinta transportadora</a>
+      <a href="#pinza" class="nav-link" data-nav>Robot con pinzas</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- rail de circuito lateral (firma visual) -->
+<div class="circuit-rail" aria-hidden="true">
+  <svg viewBox="0 0 40 1200" preserveAspectRatio="none">
+    <path id="circuitPath" d="M20,0 L20,120 L8,140 L8,260 L20,280 L20,400 L32,420 L32,540 L20,560 L20,680 L8,700 L8,820 L20,840 L20,960 L32,980 L32,1100 L20,1120 L20,1200" />
+  </svg>
+  <div class="circuit-node" data-section="portada" style="top:2%"></div>
+  <div class="circuit-node" data-section="microbit" style="top:20%"></div>
+  <div class="circuit-node" data-section="python" style="top:38%"></div>
+  <div class="circuit-node" data-section="seguidor" style="top:56%"></div>
+  <div class="circuit-node" data-section="cinta" style="top:74%"></div>
+  <div class="circuit-node" data-section="pinza" style="top:92%"></div>
+</div>
+
+<main>
+
+<!-- ===================== PORTADA ===================== -->
+<section id="portada" class="hero">
+  <canvas id="particleCanvas"></canvas>
+  <div class="hero-content">
+    <span class="hero-eyebrow reveal">Proyecto de grado</span>
+    <h1 class="hero-title reveal">
+      <span class="hero-title-line">ARCHIVO</span>
+      <span class="hero-title-line hero-title-accent">DIGITAL</span>
+    </h1>
+    <div class="hero-banner reveal">PROM 2026</div>
+    <div class="hero-author reveal">
+      <p class="hero-name">Jeronimo Caro Alfonso</p>
+      <p class="hero-course">Curso 11D</p>
+    </div>
+    <p class="hero-quote reveal">
+      “Los años pasan, las etapas terminan, pero los recuerdos, aprendizajes<br>
+      y momentos compartidos permanecen para siempre.”
+    </p>
+    <a href="#microbit" class="btn btn-primary hero-btn reveal">
+      <span>Explorar archivo</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+  <div class="hero-scroll-hint reveal">
+    <span>desplázate</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===================== MICRO:BIT ===================== -->
+<section id="microbit" class="section">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">01 — Electrónica programable</span>
+    <h2 class="section-title reveal">¿Qué es <span class="accent">micro:bit</span>?</h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Micro:bit es una placa electrónica pequeña y programable, del tamaño de una tarjeta,
+          creada para enseñar de forma práctica los fundamentos de la programación y la electrónica.
+          Combina sensores, luces LED, botones y conectores en un solo dispositivo listo para experimentar.
+        </p>
+        <p class="section-text">
+          Sirve para crear proyectos interactivos como juegos, medidores de temperatura, contadores de
+          pasos, controles remotos y robots. Se programa mediante bloques o código, lo que la hace
+          accesible tanto para principiantes como para estudiantes con más experiencia.
+        </p>
+        <a href="https://microbit.org/" target="_blank" rel="noopener" class="btn btn-outline">
+          Visitar micro:bit
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H8M17 7v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="card card-info reveal">
+        <div class="microbit-visual" aria-hidden="true">
+          <div class="mb-board">
+            <div class="mb-led-grid">
+              <!-- 25 leds generados por JS -->
+            </div>
+            <div class="mb-btn mb-btn-a">A</div>
+            <div class="mb-btn mb-btn-b">B</div>
+          </div>
+        </div>
+        <h3>Características principales</h3>
+        <ul class="feature-list">
+          <li>Matriz de 25 luces LED programables</li>
+          <li>2 botones de entrada (A y B)</li>
+          <li>Sensores de movimiento, luz y temperatura</li>
+          <li>Brújula digital y radio inalámbrica</li>
+          <li>Conector USB y pines de entrada/salida</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CONTADOR DE VEHÍCULOS -->
+    <div class="counter-block reveal">
+      <h3 class="editor-title">Juego con micro:bit: contador de vehículos</h3>
+      <p class="section-text">
+        Así se comportaría el programa en la placa: el botón <strong>A</strong> registra una moto,
+        el botón <strong>B</strong> registra un carro, y presionando <strong>A + B</strong> al mismo
+        tiempo se muestra el resultado en la matriz de LEDs.
+      </p>
+
+      <div class="counter-stage">
+        <div class="mb-board mb-board-lg" id="counterBoard">
+          <div class="mb-led-grid" id="counterLedGrid"></div>
+          <div class="mb-btn mb-btn-a mb-btn-clickable" id="btnA" role="button" tabindex="0" aria-label="Botón A: sumar moto">A</div>
+          <div class="mb-btn mb-btn-b mb-btn-clickable" id="btnB" role="button" tabindex="0" aria-label="Botón B: sumar carro">B</div>
+        </div>
+
+        <div class="counter-panel">
+          <div class="counter-row">
+            <span class="counter-emoji">🏍️</span>
+            <span class="counter-label">Motos</span>
+            <span class="counter-value" id="motoCount">0</span>
+          </div>
+          <div class="counter-row">
+            <span class="counter-emoji">🚗</span>
+            <span class="counter-label">Carros</span>
+            <span class="counter-value" id="carroCount">0</span>
+          </div>
+          <div class="counter-divider"></div>
+          <div class="counter-row counter-total">
+            <span class="counter-emoji">🚦</span>
+            <span class="counter-label">Total</span>
+            <span class="counter-value" id="totalCount">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="counter-controls">
+        <button class="btn btn-outline btn-sm" id="btnAClick">Presionar A (moto)</button>
+        <button class="btn btn-outline btn-sm" id="btnBClick">Presionar B (carro)</button>
+        <button class="btn btn-primary btn-sm" id="btnABClick">Presionar A + B (resultado)</button>
+        <button class="btn btn-outline btn-sm" id="btnResetClick">Reiniciar</button>
+      </div>
+      <p id="counterStatus" class="gripper-status">
+        Presiona <strong>A</strong> para sumar una moto, <strong>B</strong> para sumar un carro y <strong>A + B</strong> para mostrar el resultado.
+      </p>
+      <p class="counter-keyboard-hint">También puedes usar las teclas <strong>A</strong> y <strong>B</strong> del teclado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PYTHON ===================== -->
+<section id="python" class="section section-dark">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">02 — Lenguaje de programación</span>
+    <h2 class="section-title reveal">¿Qué es <span class="accent">Python</span>?</h2>
+
+    <p class="section-text reveal max-w">
+      Python es un lenguaje de programación fácil de leer y escribir, utilizado para crear programas,
+      automatizar tareas repetitivas, desarrollar aplicaciones y páginas web, analizar datos y trabajar
+      en inteligencia artificial. Es uno de los lenguajes más usados en el mundo por su simplicidad y versatilidad.
+    </p>
+
+    <div class="grid-2 reveal">
+      <div class="card card-code">
+        <div class="code-header">
+          <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+          <span class="code-filename">hola_mundo.py</span>
+        </div>
+        <pre class="code-block"><code><span class="tok-fn">print</span>(<span class="tok-str">"Hola mundo"</span>)</code></pre>
+      </div>
+      <div class="card card-explain">
+        <h3>¿Qué hace este código?</h3>
+        <p class="section-text">
+          La instrucción <code>print()</code> le dice a Python que muestre un texto en pantalla.
+          Todo lo que se escribe entre comillas dentro del paréntesis es el mensaje que aparecerá
+          como resultado. Es el primer programa que casi todos escriben al aprender a programar.
+        </p>
+      </div>
+    </div>
+
+    <div class="editor-block reveal">
+      <h3 class="editor-title">Mini editor interactivo de Python</h3>
+      <p class="section-text">Escribe una instrucción <code>print()</code> y presiona “Ejecutar” para ver el resultado.</p>
+
+      <div class="quick-examples" id="quickExamples">
+        <button class="chip" data-code='print("Hola mundo")'>Hola mundo</button>
+        <button class="chip" data-code='print("Archivo Digital - Prom 2026")'>Saludo del proyecto</button>
+        <button class="chip" data-code='print(2 + 2)'>Suma simple</button>
+        <button class="chip" data-code='print("Jeronimo Caro Alfonso")'>Mi nombre</button>
+      </div>
+
+      <div class="editor-window">
+        <div class="editor-toolbar">
+          <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+          <span class="code-filename">editor.py</span>
+        </div>
+        <textarea id="pyInput" class="editor-textarea" spellcheck="false">print("Hola mundo")</textarea>
+        <div class="editor-actions">
+          <button id="runBtn" class="btn btn-primary btn-sm">Ejecutar</button>
+          <button id="clearBtn" class="btn btn-outline btn-sm">Limpiar</button>
+        </div>
+        <div class="editor-output">
+          <div class="editor-output-label">Salida</div>
+          <pre id="pyOutput" class="editor-output-content">&gt;&gt;&gt; Presiona "Ejecutar" para ver el resultado</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROBOT SEGUIDOR DE LÍNEA ===================== -->
+<section id="seguidor" class="section">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">03 — Robótica autónoma</span>
+    <h2 class="section-title reveal">Robot seguidor de <span class="accent">línea</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Es un robot diseñado para seguir automáticamente una línea marcada en el suelo, generalmente
+          negra sobre un fondo blanco, utilizando sensores que detectan el contraste entre los dos colores.
+        </p>
+        <p class="section-text">
+          Sirve para aprender de forma práctica conceptos de robótica, programación, uso de sensores y
+          sistemas autónomos. Es uno de los proyectos más usados en la educación en tecnología porque
+          combina electrónica, mecánica y lógica de programación en un solo montaje.
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item">
+            <span class="spec-label">Sensores</span>
+            <span class="spec-value">Infrarrojos de reflectancia, detectan el contraste entre la línea y la superficie</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Motores</span>
+            <span class="spec-value">Motores DC controlados de forma independiente en cada rueda</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Control</span>
+            <span class="spec-value">Un microcontrolador compara las lecturas y ajusta la velocidad de cada motor</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Detección</span>
+            <span class="spec-value">Si el sensor detecta la línea, el robot corrige su dirección para mantenerse sobre ella</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/robot-seguidor-linea.png" alt="Robot seguidor de línea construido con placa de sensores, motores y ruedas amarillas" class="project-photo">
+        <span class="photo-caption">Robot seguidor de línea — proyecto</span>
+      </div>
+    </div>
+
+    <!-- JUEGO -->
+    <div class="game-block reveal">
+      <h3 class="editor-title">Simulador: mantén el robot en la línea</h3>
+      <p class="section-text">
+        Usa las flechas <strong>◀</strong> y <strong>▶</strong> del teclado (o los botones) para mantener el
+        robot sobre la línea el mayor tiempo posible, esquivando los obstáculos.
+      </p>
+
+      <div class="game-hud">
+        <div class="hud-item">Puntos: <span id="gameScore">0</span></div>
+        <div class="hud-item">Tiempo: <span id="gameTime">30</span>s</div>
+      </div>
+
+      <div class="game-stage-wrapper">
+        <canvas id="gameCanvas" width="700" height="320"></canvas>
+        <div id="gameOverlay" class="game-overlay">
+          <p id="gameOverlayText">Sigue la línea sin salirte y sin chocar</p>
+          <button id="gameStartBtn" class="btn btn-primary btn-sm">Iniciar juego</button>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <button id="gameLeft" class="btn btn-outline btn-sm">◀ Izquierda</button>
+        <button id="gameRight" class="btn btn-outline btn-sm">Derecha ▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CINTA TRANSPORTADORA ===================== -->
+<section id="cinta" class="section section-dark">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">04 — Automatización con LEGO</span>
+    <h2 class="section-title reveal">Cinta transportadora de <span class="accent">LEGO</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Una cinta transportadora es un sistema mecánico que permite mover objetos de un lugar a otro
+          de manera continua y automática, sin necesidad de trasladarlos manualmente.
+        </p>
+        <p class="section-text">
+          Se utiliza ampliamente en procesos industriales para clasificar, transportar y organizar
+          productos en líneas de producción, almacenes y sistemas de empaque. En una versión hecha con
+          LEGO, el mismo principio se recrea a pequeña escala: un motor mueve una banda apoyada sobre
+          engranajes y rodillos, trasladando piezas u objetos pequeños de un extremo a otro.
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item"><span class="spec-label">Motor</span><span class="spec-value">Genera el movimiento giratorio que impulsa toda la cinta</span></div>
+          <div class="spec-item"><span class="spec-label">Banda</span><span class="spec-value">Superficie continua sobre la que se transportan los objetos</span></div>
+          <div class="spec-item"><span class="spec-label">Engranajes</span><span class="spec-value">Transmiten y regulan la fuerza del motor hacia los rodillos</span></div>
+          <div class="spec-item"><span class="spec-label">Estructura</span><span class="spec-value">Piezas LEGO que sostienen y alinean todo el sistema</span></div>
+          <div class="spec-item"><span class="spec-label">Sensores</span><span class="spec-value">Pueden detectar objetos para detener o activar la cinta</span></div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/cinta-transportadora.png" alt="Cinta transportadora construida con piezas LEGO, motor amarillo y poleas" class="project-photo">
+        <span class="photo-caption">Cinta transportadora LEGO — proyecto</span>
+      </div>
+    </div>
+
+    <div class="conveyor-block reveal">
+      <div class="conveyor-belt">
+        <div class="conveyor-surface"></div>
+        <div class="conveyor-roller conveyor-roller-left"></div>
+        <div class="conveyor-roller conveyor-roller-right"></div>
+        <div class="conveyor-box box-1"></div>
+        <div class="conveyor-box box-2"></div>
+        <div class="conveyor-box box-3"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROBOT CON PINZAS ===================== -->
+<section id="pinza" class="section">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">05 — Manipulación robótica</span>
+    <h2 class="section-title reveal">Robot con <span class="accent">pinzas</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Un robot con pinzas es un robot equipado con un mecanismo de agarre capaz de sujetar, levantar
+          y trasladar objetos de un lugar a otro. La pinza es el "extremo" del robot que entra en
+          contacto directo con lo que se quiere manipular.
+        </p>
+        <p class="section-text">
+          Se usa en robótica educativa y en la industria para tareas como recoger piezas, clasificar
+          productos, ensamblar componentes o trasladar objetos en espacios donde sería difícil o
+          peligroso hacerlo manualmente.
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item"><span class="spec-label">Brazo robótico</span><span class="spec-value">Estructura articulada que posiciona la pinza en el espacio</span></div>
+          <div class="spec-item"><span class="spec-label">Pinza</span><span class="spec-value">Mecanismo final que abre y cierra para sujetar objetos</span></div>
+          <div class="spec-item"><span class="spec-label">Motores</span><span class="spec-value">Controlan el movimiento del brazo y el cierre de la pinza</span></div>
+          <div class="spec-item"><span class="spec-label">Sensores</span><span class="spec-value">Ayudan a detectar la presencia y posición de los objetos</span></div>
+          <div class="spec-item"><span class="spec-label">Control</span><span class="spec-value">Un microcontrolador coordina cada movimiento del sistema</span></div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/robot-pinzas.png" alt="Diseño CAD de robot con pinza construido con piezas Technic y placa micro:bit" class="project-photo">
+        <span class="photo-caption">Robot con pinzas — proyecto</span>
+      </div>
+    </div>
+
+    <div class="gripper-block reveal">
+      <h3 class="editor-title">Simulación de la pinza</h3>
+      <p class="section-text">Presiona los botones para controlar el movimiento del brazo y la pinza.</p>
+
+      <div class="gripper-stage">
+        <svg id="gripperSvg" viewBox="0 0 400 260" width="100%" height="260">
+          <line x1="200" y1="260" x2="200" y2="230" stroke="var(--line)" stroke-width="6" stroke-linecap="round"/>
+          <g id="gripperArm">
+            <rect x="185" y="130" width="30" height="100" rx="8" fill="var(--blue-mid)"/>
+            <g id="gripperClaws">
+              <path id="clawLeft" d="M200,130 C170,120 150,90 155,60" stroke="var(--blue-bright)" stroke-width="10" fill="none" stroke-linecap="round"/>
+              <path id="clawRight" d="M200,130 C230,120 250,90 245,60" stroke="var(--blue-bright)" stroke-width="10" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+          <circle id="gripperObject" cx="200" cy="55" r="16" fill="var(--white)" stroke="var(--blue-bright)" stroke-width="3"/>
+        </svg>
+      </div>
+
+      <div class="gripper-controls">
+        <button class="btn btn-outline btn-sm" id="openClaw">Abrir pinza</button>
+        <button class="btn btn-outline btn-sm" id="closeClaw">Cerrar pinza</button>
+        <button class="btn btn-primary btn-sm" id="grabObject">Agarrar objeto</button>
+        <button class="btn btn-outline btn-sm" id="releaseObject">Soltar objeto</button>
+      </div>
+      <p id="gripperStatus" class="gripper-status">Estado: pinza abierta, sin objeto</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Botones anterior / siguiente -->
+<div class="section-nav-arrows">
+  <button id="prevSectionBtn" class="arrow-btn" aria-label="Sección anterior">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <span id="sectionIndicator" class="section-indicator">01 / 06</span>
+  <button id="nextSectionBtn" class="arrow-btn" aria-label="Siguiente sección">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<footer class="footer">
+  <p class="footer-title">Archivo Digital — Prom 2026</p>
+  <p class="footer-author">Jeronimo Caro Alfonso — 11D</p>
+  <p class="footer-quote">“El final de una etapa es el comienzo de una nueva historia.”</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
