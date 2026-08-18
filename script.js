@@ -647,4 +647,164 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateGripperStatus();
 
+
+  /* ---------------------------------------------------------
+     10. MINI JUEGO: RETO PYTHON
+  --------------------------------------------------------- */
+  const pyQuestionEl = document.getElementById('pyQuestion');
+  const pyOptionsEl = document.getElementById('pyOptions');
+  const pyScoreEl = document.getElementById('pyGameScore');
+  const pyFeedbackEl = document.getElementById('pyFeedback');
+  const pyRestartBtn = document.getElementById('pyRestart');
+
+  const PY_QUESTIONS = [
+    { code: 'print("Hola")', options: ['Hola','print("Hola")','Error'], answer: 'Hola' },
+    { code: 'print(2 + 3)', options: ['23','5','2 + 3'], answer: '5' },
+    { code: 'print("Prom 2026")', options: ['Prom 2026','Python','2026'], answer: 'Prom 2026' }
+  ];
+  let pyGameIndex = 0, pyGameScore = 0, pyLocked = false;
+
+  function renderPyQuestion(){
+    if (!pyQuestionEl) return;
+    const q = PY_QUESTIONS[pyGameIndex];
+    pyQuestionEl.textContent = q.code;
+    pyOptionsEl.innerHTML = '';
+    q.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'challenge-option';
+      btn.textContent = option;
+      btn.addEventListener('click', () => answerPy(option, btn));
+      pyOptionsEl.appendChild(btn);
+    });
+    pyFeedbackEl.textContent = `Pregunta ${pyGameIndex + 1} de ${PY_QUESTIONS.length}`;
+    pyLocked = false;
+  }
+
+  function answerPy(option, button){
+    if (pyLocked) return;
+    pyLocked = true;
+    const q = PY_QUESTIONS[pyGameIndex];
+    if (option === q.answer){
+      pyGameScore += 1;
+      pyFeedbackEl.textContent = '¡Correcto! 🎉';
+      button.classList.add('correct');
+    } else {
+      pyFeedbackEl.textContent = `No exactamente. La respuesta correcta es: ${q.answer}`;
+      button.classList.add('wrong');
+    }
+    pyScoreEl.textContent = pyGameScore;
+    setTimeout(() => {
+      pyGameIndex += 1;
+      if (pyGameIndex < PY_QUESTIONS.length) {
+        renderPyQuestion();
+      } else {
+        pyQuestionEl.textContent = pyGameScore === 3 ? '¡Reto superado!' : 'Reto terminado';
+        pyOptionsEl.innerHTML = '';
+        pyFeedbackEl.textContent = `Obtuviste ${pyGameScore}/3 puntos. Presiona Reiniciar reto para jugar otra vez.`;
+      }
+    }, 650);
+  }
+
+  if (pyRestartBtn){
+    pyRestartBtn.addEventListener('click', () => {
+      pyGameIndex = 0; pyGameScore = 0; pyScoreEl.textContent = '0'; renderPyQuestion();
+    });
+    renderPyQuestion();
+  }
+
+  /* ---------------------------------------------------------
+     11. MINI JUEGO: CLASIFICACIÓN EN CINTA TRANSPORTADORA
+  --------------------------------------------------------- */
+  const conveyorStart = document.getElementById('conveyorStart');
+  const conveyorScoreEl = document.getElementById('conveyorScore');
+  const conveyorFeedback = document.getElementById('conveyorFeedback');
+  const sortingPackage = document.getElementById('sortingPackage');
+  const sortButtons = document.querySelectorAll('.sort-btn');
+  const packageTypes = [
+    { icon:'📦', type:'caja', name:'Caja' },
+    { icon:'⚙️', type:'pieza', name:'Pieza' },
+    { icon:'🔵', type:'sensor', name:'Sensor' }
+  ];
+  let conveyorRunning = false, conveyorScore = 0, currentPackage = null, conveyorTimeout = null;
+
+  function nextPackage(){
+    if (!conveyorRunning) return;
+    currentPackage = packageTypes[Math.floor(Math.random() * packageTypes.length)];
+    sortingPackage.textContent = currentPackage.icon;
+    sortingPackage.classList.remove('sorting-move');
+    void sortingPackage.offsetWidth;
+    sortingPackage.classList.add('sorting-move');
+    conveyorFeedback.textContent = `Clasifica: ${currentPackage.name}`;
+    clearTimeout(conveyorTimeout);
+    conveyorTimeout = setTimeout(() => {
+      if (!conveyorRunning) return;
+      conveyorFeedback.textContent = '¡Se escapó un paquete! Intenta de nuevo.';
+      conveyorRunning = false;
+      conveyorStart.textContent = 'Jugar de nuevo';
+    }, 5000);
+  }
+
+  if (conveyorStart){
+    conveyorStart.addEventListener('click', () => {
+      conveyorRunning = true;
+      conveyorScore = 0;
+      conveyorScoreEl.textContent = '0';
+      conveyorStart.textContent = 'Reiniciar';
+      nextPackage();
+    });
+  }
+
+  sortButtons.forEach(btn => btn.addEventListener('click', () => {
+    if (!conveyorRunning || !currentPackage) return;
+    if (btn.dataset.type === currentPackage.type){
+      conveyorScore += 1;
+      conveyorScoreEl.textContent = conveyorScore;
+      conveyorFeedback.textContent = '¡Bien! El paquete fue clasificado correctamente. 📦';
+      clearTimeout(conveyorTimeout);
+      setTimeout(nextPackage, 350);
+    } else {
+      conveyorFeedback.textContent = 'Clasificación incorrecta. Observa el tipo de paquete e inténtalo de nuevo.';
+    }
+  }));
+
+  /* ---------------------------------------------------------
+     12. MINI JUEGO: MISIÓN DE LA PINZA
+  --------------------------------------------------------- */
+  const missionScoreEl = document.getElementById('gripperMissionScore');
+  const missionFeedback = document.getElementById('gripperMissionFeedback');
+  const missionSteps = {
+    open: document.getElementById('stepOpen'),
+    grab: document.getElementById('stepGrab'),
+    release: document.getElementById('stepRelease')
+  };
+  const missionReset = document.getElementById('gripperMissionReset');
+  let missionStep = 0;
+
+  function resetMission(){
+    missionStep = 0;
+    Object.values(missionSteps).forEach(el => el.classList.remove('done'));
+    missionScoreEl.textContent = '0/3';
+    missionFeedback.textContent = 'Misión pendiente: comienza abriendo la pinza.';
+  }
+
+  function missionDone(name){
+    if (missionStep === 0 && name === 'open') missionStep = 1;
+    else if (missionStep === 1 && name === 'grab') missionStep = 2;
+    else if (missionStep === 2 && name === 'release') missionStep = 3;
+    else return;
+
+    const key = name;
+    missionSteps[key].classList.add('done');
+    missionScoreEl.textContent = `${missionStep}/3`;
+    missionFeedback.textContent = missionStep === 3
+      ? '¡Misión completada! El objeto fue rescatado y entregado. 🤖'
+      : `Paso ${missionStep}/3 completado. Continúa con el siguiente movimiento.`;
+  }
+
+  document.getElementById('openClaw').addEventListener('click', () => missionDone('open'));
+  document.getElementById('grabObject').addEventListener('click', () => missionDone('grab'));
+  document.getElementById('releaseObject').addEventListener('click', () => missionDone('release'));
+  if (missionReset) missionReset.addEventListener('click', resetMission);
+  resetMission();
+
 });
