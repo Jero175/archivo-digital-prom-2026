@@ -28,6 +28,9 @@
       <a href="#seguidor" class="nav-link" data-nav>Seguidor de línea</a>
       <a href="#cinta" class="nav-link" data-nav>Cinta transportadora</a>
       <a href="#pinza" class="nav-link" data-nav>Robot con pinzas</a>
+      <a href="#canasta" class="nav-link" data-nav>Canasta automática</a>
+      <a href="#bruabit" class="nav-link" data-nav>BRUABIT</a>
+      <a href="#feria" class="nav-link" data-nav>Robot esquiva conos</a>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
       <span></span><span></span><span></span>
@@ -41,11 +44,14 @@
     <path id="circuitPath" d="M20,0 L20,120 L8,140 L8,260 L20,280 L20,400 L32,420 L32,540 L20,560 L20,680 L8,700 L8,820 L20,840 L20,960 L32,980 L32,1100 L20,1120 L20,1200" />
   </svg>
   <div class="circuit-node" data-section="portada" style="top:2%"></div>
-  <div class="circuit-node" data-section="microbit" style="top:20%"></div>
-  <div class="circuit-node" data-section="python" style="top:38%"></div>
-  <div class="circuit-node" data-section="seguidor" style="top:56%"></div>
-  <div class="circuit-node" data-section="cinta" style="top:74%"></div>
-  <div class="circuit-node" data-section="pinza" style="top:92%"></div>
+  <div class="circuit-node" data-section="microbit" style="top:14%"></div>
+  <div class="circuit-node" data-section="python" style="top:26%"></div>
+  <div class="circuit-node" data-section="seguidor" style="top:38%"></div>
+  <div class="circuit-node" data-section="cinta" style="top:50%"></div>
+  <div class="circuit-node" data-section="pinza" style="top:62%"></div>
+  <div class="circuit-node" data-section="canasta" style="top:74%"></div>
+  <div class="circuit-node" data-section="bruabit" style="top:86%"></div>
+  <div class="circuit-node" data-section="feria" style="top:98%"></div>
 </div>
 
 <main>
@@ -68,7 +74,7 @@
       “Los años pasan, las etapas terminan, pero los recuerdos, aprendizajes<br>
       y momentos compartidos permanecen para siempre.”
     </p>
-    <div class="hero-projects reveal">5 proyectos · 5 experiencias interactivas</div>
+    <div class="hero-projects reveal">8 proyectos · 8 experiencias interactivas</div>
     <a href="#microbit" class="btn btn-primary hero-btn reveal">
       <span>Explorar archivo</span>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -510,6 +516,221 @@
   </div>
 </section>
 
+<!-- ===================== CANASTA DE BALONCESTO AUTOMÁTICA ===================== -->
+<section id="canasta" class="section section-dark">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">06 — Detección electrónica de puntos</span>
+    <h2 class="section-title reveal">Canasta con puntuación <span class="accent">automática</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Es una canasta de baloncesto equipada con un sistema electrónico que detecta,
+          por sí sola, cuando la pelota entra en el aro y suma el punto en una pantalla,
+          sin que un árbitro o un compañero tenga que llevar la cuenta a mano.
+        </p>
+        <p class="section-text">
+          El truco está en la pelota: va recubierta con aluminio, un material conductor.
+          Cuando toca el aro metálico se cierra un pequeño circuito que la placa micro:bit
+          interpreta como "punto anotado".
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item"><span class="spec-label">Sensor de contacto</span><span class="spec-value">Detecta cuando la pelota conductora toca el aro</span></div>
+          <div class="spec-item"><span class="spec-label">Pelota conductora</span><span class="spec-value">Recubierta de aluminio para cerrar el circuito</span></div>
+          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Procesa la señal y controla el conteo de puntos</span></div>
+          <div class="spec-item"><span class="spec-label">Matriz LED</span><span class="spec-value">Muestra el puntaje acumulado en tiempo real</span></div>
+          <div class="spec-item"><span class="spec-label">Temporizador</span><span class="spec-value">Espera 5 segundos entre anotaciones para evitar contar dos veces el mismo lanzamiento</span></div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/canasta-baloncesto.jpg" alt="Prototipo de canasta de baloncesto con puntuación automática usando micro:bit" class="project-photo">
+        <span class="photo-caption">Canasta con puntuación automática — proyecto</span>
+      </div>
+    </div>
+
+    <div class="mini-challenge reveal" id="basketGame">
+      <div class="challenge-head">
+        <div><span class="section-eyebrow">Mini juego</span><h3>Encesta antes de que pase el tiempo</h3></div>
+        <span class="challenge-score">Puntos: <b id="basketScore">0</b></span>
+      </div>
+      <p class="section-text">
+        Presiona "¡Encestar!" justo cuando la pelota esté sobre el aro. Igual que en el
+        prototipo real, después de anotar hay que esperar 5 segundos para el siguiente intento.
+      </p>
+      <div class="basket-stage">
+        <div class="basket-ball" id="basketBall">🏀</div>
+      </div>
+      <p class="challenge-feedback" id="basketFeedback">Presiona iniciar para comenzar.</p>
+      <button class="btn btn-primary btn-sm" id="basketStart">Iniciar juego</button>
+      <button class="btn btn-outline btn-sm" id="basketShootBtn" style="display:none;">¡Encestar!</button>
+    </div>
+
+    <div class="project-dossier reveal">
+      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 06</small></div>
+      <div class="dossier-grid">
+        <article><strong>Nombre del proyecto</strong><p>Canasta de baloncesto con puntuación automática</p></article>
+        <article><strong>Problema o necesidad</strong><p>En los partidos escolares, llevar el conteo de puntos de forma manual genera errores y discusiones, además de restarle agilidad al juego.</p></article>
+        <article><strong>Objetivo</strong><p>Crear un sistema que detecte automáticamente cuando la pelota entra en la canasta y sume el punto sin intervención humana.</p></article>
+        <article><strong>Descripción de la solución tecnológica</strong><p>Se usa una placa micro:bit conectada al aro mediante un sensor de contacto, junto con una pelota recubierta de aluminio que actúa como conductor.</p></article>
+        <article><strong>Funcionamiento</strong><p>Al pasar la pelota de aluminio por el aro se cierra un circuito que la micro:bit detecta como punto y lo suma en la pantalla LED, esperando 5 segundos antes de contar uno nuevo.</p></article>
+        <article><strong>Dificultades encontradas</strong><p>Calibrar la sensibilidad del sensor para que solo contara contactos reales, evitar falsos positivos por rebotes y ajustar el tiempo de espera entre anotaciones.</p></article>
+        <article><strong>Conclusiones</strong><p>El proyecto muestra cómo un circuito sencillo con micro:bit puede automatizar el arbitraje en actividades deportivas escolares.</p></article>
+        <article><strong>Integrantes</strong><p>Michael Torres, Rivera — 11D</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BRUABIT — FUERZA MAGNÉTICA ===================== -->
+<section id="bruabit" class="section">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">07 — Electromagnetismo aplicado</span>
+    <h2 class="section-title reveal">BRUABIT: fuerza <span class="accent">magnética</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          La fuerza magnética suele enseñarse solo de forma teórica, lo que dificulta
+          visualizar cómo actúa realmente sobre los objetos. BRUABIT es un prototipo
+          tipo grúa que hace visible ese efecto: un electroimán controlado por micro:bit
+          atrae y suelta un objeto metálico bajo demanda.
+        </p>
+        <p class="section-text">
+          Una estructura de soporte sostiene el electroimán en la posición correcta,
+          y la placa micro:bit se encarga de activarlo o apagarlo según el programa.
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item"><span class="spec-label">Electroimán</span><span class="spec-value">Genera el campo magnético que atrae el objeto</span></div>
+          <div class="spec-item"><span class="spec-label">Brazo / soporte</span><span class="spec-value">Sostiene el electroimán en la posición correcta</span></div>
+          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Controla la activación y desactivación del imán</span></div>
+          <div class="spec-item"><span class="spec-label">Fuente de energía</span><span class="spec-value">Alimenta el circuito del electroimán</span></div>
+          <div class="spec-item"><span class="spec-label">Objeto metálico</span><span class="spec-value">Pieza que es atraída al activar el imán</span></div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/bruabit-fuerza-magnetica.jpg" alt="Prototipo BRUABIT: grúa con electroimán controlado por micro:bit" class="project-photo">
+        <span class="photo-caption">BRUABIT — Fuerza magnética — proyecto</span>
+      </div>
+    </div>
+
+    <div class="gripper-block reveal">
+      <h3 class="editor-title">Simulación del electroimán</h3>
+      <p class="section-text">Activa el electroimán para atraer el objeto metálico y desactívalo para soltarlo, igual que en el prototipo real controlado por micro:bit.</p>
+
+      <div class="magnet-stage">
+        <div class="magnet-coil">🧲</div>
+        <div class="magnet-object" id="magnetObject">⚙️</div>
+      </div>
+
+      <div class="gripper-controls">
+        <button class="btn btn-primary btn-sm" id="magnetOnBtn">Activar electroimán</button>
+        <button class="btn btn-outline btn-sm" id="magnetOffBtn">Desactivar electroimán</button>
+      </div>
+      <p id="magnetStatus" class="gripper-status">Estado: electroimán apagado, objeto en la base.</p>
+    </div>
+
+    <div class="mini-challenge reveal" id="magnetGame">
+      <div class="challenge-head">
+        <div><span class="section-eyebrow">Mini juego</span><h3>Misión: transporta la pieza metálica</h3></div>
+        <span class="challenge-score">Estado: <b id="magnetMissionScore">0/2</b></span>
+      </div>
+      <p class="section-text">Completa la secuencia: activa el electroimán para sujetar la pieza y desactívalo para soltarla en la zona de entrega.</p>
+      <div class="mission-steps"><span id="magStepOn">1. Activar y sujetar</span><span id="magStepOff">2. Soltar en la entrega</span></div>
+      <p class="challenge-feedback" id="magnetMissionFeedback">Misión pendiente: comienza activando el electroimán.</p>
+      <button class="btn btn-outline btn-sm" id="magnetMissionReset">Reiniciar misión</button>
+    </div>
+
+    <div class="project-dossier reveal">
+      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 07</small></div>
+      <div class="dossier-grid">
+        <article><strong>Nombre del proyecto</strong><p>BRUABIT — Fuerza magnética</p></article>
+        <article><strong>Problema o necesidad</strong><p>La fuerza magnética suele enseñarse solo de forma teórica, lo que dificulta que los estudiantes visualicen cómo actúa sobre los objetos.</p></article>
+        <article><strong>Objetivo</strong><p>Construir un prototipo que demuestre visualmente el efecto de la fuerza magnética mediante un mecanismo controlado por micro:bit.</p></article>
+        <article><strong>Descripción de la solución tecnológica</strong><p>Una estructura tipo grúa sostiene un electroimán controlado por micro:bit, que atrae o suelta un objeto metálico según la programación.</p></article>
+        <article><strong>Funcionamiento</strong><p>Al activarse el programa, la micro:bit envía la señal que activa el electroimán y genera el campo magnético que atrae el objeto; al desactivarse, el objeto se suelta.</p></article>
+        <article><strong>Dificultades encontradas</strong><p>Controlar la intensidad del campo magnético, mantener estable la estructura de soporte y sincronizar el tiempo de activación con la placa.</p></article>
+        <article><strong>Conclusiones</strong><p>El proyecto permitió comprobar de forma práctica el principio del electromagnetismo aplicado a un sistema controlado por microcontrolador.</p></article>
+        <article><strong>Integrantes</strong><p>Gabriela y Jose — 11D</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROBOT ESQUIVA OBSTÁCULOS (FERIA DE TECNOLOGÍA) ===================== -->
+<section id="feria" class="section section-dark">
+  <div class="section-inner">
+    <span class="section-eyebrow reveal">08 — Robótica autónoma</span>
+    <h2 class="section-title reveal">Robot esquiva <span class="accent">obstáculos</span></h2>
+
+    <div class="grid-2">
+      <div class="reveal">
+        <p class="section-text">
+          Robot construido con micro:bit y ruedas independientes, presentado en la Feria
+          de Tecnología. Su tarea es recorrer una pista llena de conos sin chocar, tomando
+          la decisión de girar hacia un lado u otro según lo que detecta en su camino.
+        </p>
+        <p class="section-text">
+          A diferencia del seguidor de línea (que sigue una ruta marcada), este robot
+          debe reaccionar a obstáculos que no siguen un patrón fijo, lo que lo obliga a
+          tomar decisiones en cada tramo del recorrido.
+        </p>
+        <div class="specs-grid">
+          <div class="spec-item"><span class="spec-label">Sensores de proximidad</span><span class="spec-value">Detectan la distancia a los conos cercanos</span></div>
+          <div class="spec-item"><span class="spec-label">Motores DC</span><span class="spec-value">Controlan el giro independiente de cada rueda</span></div>
+          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Procesa las lecturas y decide la maniobra a seguir</span></div>
+          <div class="spec-item"><span class="spec-label">Chasis con ruedas</span><span class="spec-value">Estructura que soporta el recorrido entre los conos</span></div>
+        </div>
+      </div>
+
+      <div class="card card-image-frame reveal">
+        <img src="assets/robot-feria-conos.jpg" alt="Robot con micro:bit recorriendo una pista de conos en la Feria de Tecnología" class="project-photo">
+        <span class="photo-caption">Robot esquiva obstáculos — Feria de Tecnología</span>
+      </div>
+    </div>
+
+    <div class="editor-block reveal">
+      <h3 class="editor-title">Simulador: esquiva los conos</h3>
+      <p class="section-text">El robot detecta un cono a un lado de la pista. Elige hacia qué lado debe girar para esquivarlo sin salirse del camino.</p>
+      <div class="cone-stage">
+        <div class="cone-track">
+          <div class="cone-icon" id="coneIcon">🟡</div>
+          <div class="cone-robot">🤖</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mini-challenge reveal" id="feriaChallenge">
+      <div class="challenge-head">
+        <div><span class="section-eyebrow">Mini juego</span><h3>Reto: esquiva los conos</h3></div>
+        <span class="challenge-score">Puntos: <b id="feriaScore">0</b>/5</span>
+      </div>
+      <p class="section-text">Indica hacia qué lado debe girar el robot para esquivar cada cono. Completa las 5 rondas.</p>
+      <div class="challenge-options" id="feriaOptions">
+        <button class="challenge-option" data-side="izquierda">◀ Izquierda</button>
+        <button class="challenge-option" data-side="derecha">Derecha ▶</button>
+      </div>
+      <p class="challenge-feedback" id="feriaFeedback">Ronda 1 de 5</p>
+      <button class="btn btn-outline btn-sm" id="feriaRestart">Reiniciar reto</button>
+    </div>
+
+    <div class="project-dossier reveal">
+      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 08</small></div>
+      <div class="dossier-grid">
+        <article><strong>Nombre del proyecto</strong><p>Robot esquiva obstáculos con micro:bit</p></article>
+        <article><strong>Problema o necesidad</strong><p>Los robots que se mueven en espacios con objetos necesitan detectar obstáculos para no chocar y completar un recorrido sin ayuda manual.</p></article>
+        <article><strong>Objetivo</strong><p>Programar un robot capaz de recorrer un circuito con conos, esquivándolos de forma autónoma.</p></article>
+        <article><strong>Descripción de la solución tecnológica</strong><p>Robot con base de ruedas, motores DC y una placa micro:bit programada para detectar y rodear obstáculos en su trayecto.</p></article>
+        <article><strong>Funcionamiento</strong><p>El robot avanza por el circuito; al acercarse a un cono, ajusta el giro de sus ruedas para esquivarlo y continúa su recorrido.</p></article>
+        <article><strong>Dificultades encontradas</strong><p>Calibrar la distancia de detección, ajustar la velocidad de giro y lograr que completara el recorrido sin salirse del camino.</p></article>
+        <article><strong>Conclusiones</strong><p>El proyecto evidenció cómo la programación de sensores permite que un robot tome decisiones autónomas frente a obstáculos.</p></article>
+        <article><strong>Integrantes</strong><p>Juan, Hugo y Jeronimo — 11D</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- Botones anterior / siguiente -->
@@ -517,7 +738,7 @@
   <button id="prevSectionBtn" class="arrow-btn" aria-label="Sección anterior">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
-  <span id="sectionIndicator" class="section-indicator">01 / 06</span>
+  <span id="sectionIndicator" class="section-indicator">01 / 09</span>
   <button id="nextSectionBtn" class="arrow-btn" aria-label="Siguiente sección">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>

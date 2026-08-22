@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const SECTION_IDS = ['portada','microbit','python','seguidor','cinta','pinza'];
+  const SECTION_IDS = ['portada','microbit','python','seguidor','cinta','pinza','canasta','bruabit','feria'];
   const sections = SECTION_IDS.map(id => document.getElementById(id));
 
   /* ---------------------------------------------------------
@@ -806,5 +806,188 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('releaseObject').addEventListener('click', () => missionDone('release'));
   if (missionReset) missionReset.addEventListener('click', resetMission);
   resetMission();
+
+  /* ---------------------------------------------------------
+     13. MINI JUEGO: CANASTA CON PUNTUACIÓN AUTOMÁTICA
+  --------------------------------------------------------- */
+  const basketBall = document.getElementById('basketBall');
+  const basketScoreEl = document.getElementById('basketScore');
+  const basketFeedback = document.getElementById('basketFeedback');
+  const basketStart = document.getElementById('basketStart');
+  const basketShootBtn = document.getElementById('basketShootBtn');
+
+  let basketRunning = false, basketScore = 0, basketInHoop = false, basketCooldown = false;
+  let basketMissTimeout = null, basketNextTimeout = null;
+
+  function basketScheduleNext(delay){
+    clearTimeout(basketNextTimeout);
+    basketNextTimeout = setTimeout(() => {
+      if (!basketRunning) return;
+      basketInHoop = true;
+      basketBall.classList.add('active');
+      basketShootBtn.style.display = 'inline-flex';
+      basketFeedback.textContent = '¡La pelota está sobre el aro!';
+      clearTimeout(basketMissTimeout);
+      basketMissTimeout = setTimeout(() => {
+        if (!basketRunning || !basketInHoop) return;
+        basketInHoop = false;
+        basketBall.classList.remove('active');
+        basketShootBtn.style.display = 'none';
+        basketFeedback.textContent = 'Fallaste ese intento. Espera el siguiente.';
+        basketScheduleNext(1100);
+      }, 1100);
+    }, delay);
+  }
+
+  function basketShoot(){
+    if (!basketRunning || basketCooldown) return;
+    if (!basketInHoop){
+      basketFeedback.textContent = 'Todavía no está sobre el aro. ¡Espera el momento justo!';
+      return;
+    }
+    basketInHoop = false;
+    basketBall.classList.remove('active');
+    basketShootBtn.style.display = 'none';
+    clearTimeout(basketMissTimeout);
+    basketScore += 1;
+    basketScoreEl.textContent = basketScore;
+    basketFeedback.textContent = '¡Encestada! Espera 5 segundos, igual que el sensor real.';
+    basketCooldown = true;
+    setTimeout(() => {
+      basketCooldown = false;
+      if (basketRunning) basketScheduleNext(500);
+    }, 5000);
+  }
+
+  if (basketStart){
+    basketStart.addEventListener('click', () => {
+      basketRunning = true;
+      basketScore = 0;
+      basketCooldown = false;
+      basketScoreEl.textContent = '0';
+      basketStart.textContent = 'Reiniciar';
+      basketFeedback.textContent = 'Preparando el próximo lanzamiento...';
+      basketScheduleNext(900);
+    });
+  }
+  if (basketShootBtn) basketShootBtn.addEventListener('click', basketShoot);
+
+  /* ---------------------------------------------------------
+     14. MINI JUEGO: BRUABIT — MISIÓN DEL ELECTROIMÁN
+  --------------------------------------------------------- */
+  const magnetObject = document.getElementById('magnetObject');
+  const magnetStatus = document.getElementById('magnetStatus');
+  const magnetOnBtn = document.getElementById('magnetOnBtn');
+  const magnetOffBtn = document.getElementById('magnetOffBtn');
+  const magnetMissionScore = document.getElementById('magnetMissionScore');
+  const magnetMissionFeedback = document.getElementById('magnetMissionFeedback');
+  const magnetMissionReset = document.getElementById('magnetMissionReset');
+  const magStepOn = document.getElementById('magStepOn');
+  const magStepOff = document.getElementById('magStepOff');
+
+  let magnetOn = false, magnetStep = 0;
+
+  function resetMagnetMission(){
+    magnetStep = 0;
+    magnetOn = false;
+    if (magnetObject) magnetObject.classList.remove('attracted');
+    if (magStepOn) magStepOn.classList.remove('done');
+    if (magStepOff) magStepOff.classList.remove('done');
+    if (magnetMissionScore) magnetMissionScore.textContent = '0/2';
+    if (magnetMissionFeedback) magnetMissionFeedback.textContent = 'Misión pendiente: comienza activando el electroimán.';
+    if (magnetStatus) magnetStatus.textContent = 'Estado: electroimán apagado, objeto en la base.';
+  }
+
+  if (magnetOnBtn){
+    magnetOnBtn.addEventListener('click', () => {
+      magnetOn = true;
+      if (magnetObject) magnetObject.classList.add('attracted');
+      if (magnetStatus) magnetStatus.textContent = 'Estado: electroimán activado, objeto sujeto.';
+      if (magnetStep === 0){
+        magnetStep = 1;
+        if (magStepOn) magStepOn.classList.add('done');
+        if (magnetMissionScore) magnetMissionScore.textContent = '1/2';
+        if (magnetMissionFeedback) magnetMissionFeedback.textContent = 'Pieza sujeta. Ahora desactívalo sobre la zona de entrega para soltarla.';
+      }
+    });
+  }
+
+  if (magnetOffBtn){
+    magnetOffBtn.addEventListener('click', () => {
+      magnetOn = false;
+      if (magnetObject) magnetObject.classList.remove('attracted');
+      if (magnetStatus) magnetStatus.textContent = 'Estado: electroimán apagado, objeto liberado.';
+      if (magnetStep === 1){
+        magnetStep = 2;
+        if (magStepOff) magStepOff.classList.add('done');
+        if (magnetMissionScore) magnetMissionScore.textContent = '2/2';
+        if (magnetMissionFeedback) magnetMissionFeedback.textContent = '¡Misión completada! La pieza fue transportada y entregada. 🧲';
+      }
+    });
+  }
+
+  if (magnetMissionReset) magnetMissionReset.addEventListener('click', resetMagnetMission);
+  resetMagnetMission();
+
+  /* ---------------------------------------------------------
+     15. MINI JUEGO: ESQUIVA LOS CONOS
+  --------------------------------------------------------- */
+  const coneIcon = document.getElementById('coneIcon');
+  const feriaOptions = document.getElementById('feriaOptions');
+  const feriaScoreEl = document.getElementById('feriaScore');
+  const feriaFeedback = document.getElementById('feriaFeedback');
+  const feriaRestart = document.getElementById('feriaRestart');
+
+  const FERIA_ROUNDS = 5;
+  let feriaRound = 0, feriaScore = 0, feriaCurrentSide = null, feriaLocked = false;
+
+  function nextConeRound(){
+    feriaCurrentSide = Math.random() < 0.5 ? 'left' : 'right';
+    if (coneIcon){
+      coneIcon.classList.remove('pos-left', 'pos-right');
+      coneIcon.classList.add(feriaCurrentSide === 'left' ? 'pos-left' : 'pos-right');
+    }
+    if (feriaFeedback) feriaFeedback.textContent = `Ronda ${feriaRound + 1} de ${FERIA_ROUNDS}`;
+    feriaLocked = false;
+  }
+
+  function answerFeria(side, button){
+    if (feriaLocked || !feriaCurrentSide) return;
+    feriaLocked = true;
+    const correctSide = feriaCurrentSide === 'left' ? 'derecha' : 'izquierda';
+    if (side === correctSide){
+      feriaScore += 1;
+      if (feriaScoreEl) feriaScoreEl.textContent = feriaScore;
+      if (feriaFeedback) feriaFeedback.textContent = '¡Correcto! El robot esquivó el cono. 🤖';
+      if (button) button.classList.add('correct');
+    } else {
+      if (feriaFeedback) feriaFeedback.textContent = `El robot hubiera chocado. Debía girar hacia ${correctSide}.`;
+      if (button) button.classList.add('wrong');
+    }
+    setTimeout(() => {
+      if (button) button.classList.remove('correct', 'wrong');
+      feriaRound += 1;
+      if (feriaRound < FERIA_ROUNDS){
+        nextConeRound();
+      } else {
+        if (coneIcon) coneIcon.classList.remove('pos-left', 'pos-right');
+        if (feriaFeedback) feriaFeedback.textContent = `Reto terminado: ${feriaScore}/${FERIA_ROUNDS} puntos. Presiona reiniciar para jugar otra vez.`;
+      }
+    }, 650);
+  }
+
+  if (feriaOptions){
+    feriaOptions.querySelectorAll('.challenge-option').forEach(btn => {
+      btn.addEventListener('click', () => answerFeria(btn.dataset.side, btn));
+    });
+  }
+  if (feriaRestart){
+    feriaRestart.addEventListener('click', () => {
+      feriaRound = 0; feriaScore = 0;
+      if (feriaScoreEl) feriaScoreEl.textContent = '0';
+      nextConeRound();
+    });
+  }
+  if (feriaOptions) nextConeRound();
 
 });
