@@ -1,756 +1,261 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archivo Digital — Prom 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Mi IA</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1b1b1f" />
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --panel: #ffffff;
+    --ink: #1b1b1f;
+    --muted: #6b6b70;
+    --accent: #2f6f4f;
+    --accent-ink: #ffffff;
+    --bubble-user: #e7e3da;
+    --border: #e2e0da;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17171a;
+      --panel: #1f1f23;
+      --ink: #eceae4;
+      --muted: #9a9a9f;
+      --accent: #5fae82;
+      --accent-ink: #0d1410;
+      --bubble-user: #2a2a2f;
+      --border: #2c2c31;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  header {
+    padding: 14px 16px calc(14px + env(safe-area-inset-top, 0px));
+    padding-top: calc(14px + env(safe-area-inset-top, 0px));
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  header h1 {
+    font-size: 17px;
+    margin: 0;
+    font-weight: 600;
+  }
+  .search-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg {
+    max-width: 82%;
+    padding: 10px 13px;
+    border-radius: 14px;
+    line-height: 1.45;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--bubble-user);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.error {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid #c0392b;
+    color: #c0392b;
+  }
+  #empty {
+    margin: auto;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 260px;
+  }
+  form {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  textarea {
+    flex: 1;
+    resize: none;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--ink);
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    max-height: 120px;
+  }
+  button {
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 0 18px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; }
+  #config {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: none;
+    gap: 6px;
+  }
+  #config.show { display: flex; }
+  #config input {
+    flex: 1;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--ink);
+  }
+</style>
 </head>
 <body>
+  <header>
+    <h1>Mi IA</h1>
+    <label class="search-toggle">
+      <input type="checkbox" id="searchToggle" />
+      Buscar en internet
+    </label>
+  </header>
 
-<!-- Indicador de progreso de lectura -->
-<div class="progress-bar" id="progressBar"></div>
-
-<!-- NAV -->
-<header class="navbar" id="navbar">
-  <div class="nav-inner">
-    <a href="#portada" class="nav-brand">
-      <span class="nav-brand-mark">AD</span>
-      <span class="nav-brand-text">Archivo&nbsp;Digital</span>
-    </a>
-    <nav class="nav-links" id="navLinks">
-      <a href="#portada" class="nav-link" data-nav>Inicio</a>
-      <a href="#microbit" class="nav-link" data-nav>Micro:bit</a>
-      <a href="#python" class="nav-link" data-nav>Python</a>
-      <a href="#seguidor" class="nav-link" data-nav>Seguidor de línea</a>
-      <a href="#cinta" class="nav-link" data-nav>Cinta transportadora</a>
-      <a href="#pinza" class="nav-link" data-nav>Robot con pinzas</a>
-      <a href="#canasta" class="nav-link" data-nav>Canasta automática</a>
-      <a href="#bruabit" class="nav-link" data-nav>BRUABIT</a>
-      <a href="#feria" class="nav-link" data-nav>Robot esquiva conos</a>
-    </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
-      <span></span><span></span><span></span>
-    </button>
+  <div id="chat">
+    <div id="empty">Escribí algo para empezar. Puedo programar, redactar documentos y, si activás "Buscar en internet", consultar la web.</div>
   </div>
-</header>
 
-<!-- rail de circuito lateral (firma visual) -->
-<div class="circuit-rail" aria-hidden="true">
-  <svg viewBox="0 0 40 1200" preserveAspectRatio="none">
-    <path id="circuitPath" d="M20,0 L20,120 L8,140 L8,260 L20,280 L20,400 L32,420 L32,540 L20,560 L20,680 L8,700 L8,820 L20,840 L20,960 L32,980 L32,1100 L20,1120 L20,1200" />
-  </svg>
-  <div class="circuit-node" data-section="portada" style="top:2%"></div>
-  <div class="circuit-node" data-section="microbit" style="top:14%"></div>
-  <div class="circuit-node" data-section="python" style="top:26%"></div>
-  <div class="circuit-node" data-section="seguidor" style="top:38%"></div>
-  <div class="circuit-node" data-section="cinta" style="top:50%"></div>
-  <div class="circuit-node" data-section="pinza" style="top:62%"></div>
-  <div class="circuit-node" data-section="canasta" style="top:74%"></div>
-  <div class="circuit-node" data-section="bruabit" style="top:86%"></div>
-  <div class="circuit-node" data-section="feria" style="top:98%"></div>
-</div>
-
-<main>
-
-<!-- ===================== PORTADA ===================== -->
-<section id="portada" class="hero">
-  <canvas id="particleCanvas"></canvas>
-  <div class="hero-content">
-    <span class="hero-eyebrow reveal">Proyecto de grado</span>
-    <h1 class="hero-title reveal">
-      <span class="hero-title-line">ARCHIVO</span>
-      <span class="hero-title-line hero-title-accent">DIGITAL</span>
-    </h1>
-    <div class="hero-banner reveal">PROM 2026</div>
-    <div class="hero-author reveal">
-      <p class="hero-name">Jeronimo Caro Alfonso</p>
-      <p class="hero-course">Curso 11D</p>
-    </div>
-    <p class="hero-quote reveal">
-      “Los años pasan, las etapas terminan, pero los recuerdos, aprendizajes<br>
-      y momentos compartidos permanecen para siempre.”
-    </p>
-    <div class="hero-projects reveal">8 proyectos · 8 experiencias interactivas</div>
-    <a href="#microbit" class="btn btn-primary hero-btn reveal">
-      <span>Explorar archivo</span>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
-  </div>
-  <div class="hero-scroll-hint reveal">
-    <span>desplázate</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
-
-<!-- ===================== MICRO:BIT ===================== -->
-<section id="microbit" class="section">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">01 — Electrónica programable</span>
-    <h2 class="section-title reveal">¿Qué es <span class="accent">micro:bit</span>?</h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Micro:bit es una placa electrónica pequeña y programable, del tamaño de una tarjeta,
-          creada para enseñar de forma práctica los fundamentos de la programación y la electrónica.
-          Combina sensores, luces LED, botones y conectores en un solo dispositivo listo para experimentar.
-        </p>
-        <p class="section-text">
-          Sirve para crear proyectos interactivos como juegos, medidores de temperatura, contadores de
-          pasos, controles remotos y robots. Se programa mediante bloques o código, lo que la hace
-          accesible tanto para principiantes como para estudiantes con más experiencia.
-        </p>
-        <a href="https://microbit.org/" target="_blank" rel="noopener" class="btn btn-outline">
-          Visitar micro:bit
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H8M17 7v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </div>
-
-      <div class="card card-info reveal">
-        <div class="microbit-visual" aria-hidden="true">
-          <div class="mb-board">
-            <div class="mb-led-grid">
-              <!-- 25 leds generados por JS -->
-            </div>
-            <div class="mb-btn mb-btn-a">A</div>
-            <div class="mb-btn mb-btn-b">B</div>
-          </div>
-        </div>
-        <h3>Características principales</h3>
-        <ul class="feature-list">
-          <li>Matriz de 25 luces LED programables</li>
-          <li>2 botones de entrada (A y B)</li>
-          <li>Sensores de movimiento, luz y temperatura</li>
-          <li>Brújula digital y radio inalámbrica</li>
-          <li>Conector USB y pines de entrada/salida</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- CONTADOR DE VEHÍCULOS -->
-    <div class="counter-block reveal">
-      <h3 class="editor-title">Juego con micro:bit: contador de vehículos</h3>
-      <p class="section-text">
-        Así se comportaría el programa en la placa: el botón <strong>A</strong> registra una moto,
-        el botón <strong>B</strong> registra un carro, y presionando <strong>A + B</strong> al mismo
-        tiempo se muestra el resultado en la matriz de LEDs.
-      </p>
-
-      <div class="counter-stage">
-        <div class="mb-board mb-board-lg" id="counterBoard">
-          <div class="mb-led-grid" id="counterLedGrid"></div>
-          <div class="mb-btn mb-btn-a mb-btn-clickable" id="btnA" role="button" tabindex="0" aria-label="Botón A: sumar moto">A</div>
-          <div class="mb-btn mb-btn-b mb-btn-clickable" id="btnB" role="button" tabindex="0" aria-label="Botón B: sumar carro">B</div>
-        </div>
-
-        <div class="counter-panel">
-          <div class="counter-row">
-            <span class="counter-emoji">🏍️</span>
-            <span class="counter-label">Motos</span>
-            <span class="counter-value" id="motoCount">0</span>
-          </div>
-          <div class="counter-row">
-            <span class="counter-emoji">🚗</span>
-            <span class="counter-label">Carros</span>
-            <span class="counter-value" id="carroCount">0</span>
-          </div>
-          <div class="counter-divider"></div>
-          <div class="counter-row counter-total">
-            <span class="counter-emoji">🚦</span>
-            <span class="counter-label">Total</span>
-            <span class="counter-value" id="totalCount">0</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="counter-controls">
-        <button class="btn btn-outline btn-sm" id="btnAClick">Presionar A (moto)</button>
-        <button class="btn btn-outline btn-sm" id="btnBClick">Presionar B (carro)</button>
-        <button class="btn btn-primary btn-sm" id="btnABClick">Presionar A + B (resultado)</button>
-        <button class="btn btn-outline btn-sm" id="btnResetClick">Reiniciar</button>
-      </div>
-      <p id="counterStatus" class="gripper-status">
-        Presiona <strong>A</strong> para sumar una moto, <strong>B</strong> para sumar un carro y <strong>A + B</strong> para mostrar el resultado.
-      </p>
-      <p class="counter-keyboard-hint">También puedes usar las teclas <strong>A</strong> y <strong>B</strong> del teclado.</p>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 01</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Contador de vehículos con micro:bit</p></article>
-        <article><strong>Problema o necesidad</strong><p>Registrar de forma sencilla la cantidad de motos y carros que pasan por un punto, evitando llevar el conteo manual.</p></article>
-        <article><strong>Objetivo</strong><p>Crear un contador interactivo que use los botones de micro:bit para registrar vehículos y mostrar el total.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Se utiliza una placa micro:bit programada con botones A y B, una matriz LED y una lógica de conteo.</p></article>
-        <article><strong>Funcionamiento</strong><p>A suma una moto, B suma un carro y A+B presenta el resultado. El sitio web simula la misma lógica.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Definir la lógica de los botones, controlar los valores del contador y lograr una respuesta clara en la matriz LED.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto demuestra cómo una placa pequeña puede convertir una necesidad cotidiana en una solución programable e interactiva.</p></article>
-        <article><strong>Integrantes</strong><p>Jeronimo Caro Alfonso — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== PYTHON ===================== -->
-<section id="python" class="section section-dark">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">02 — Lenguaje de programación</span>
-    <h2 class="section-title reveal">¿Qué es <span class="accent">Python</span>?</h2>
-
-    <p class="section-text reveal max-w">
-      Python es un lenguaje de programación fácil de leer y escribir, utilizado para crear programas,
-      automatizar tareas repetitivas, desarrollar aplicaciones y páginas web, analizar datos y trabajar
-      en inteligencia artificial. Es uno de los lenguajes más usados en el mundo por su simplicidad y versatilidad.
-    </p>
-
-    <div class="grid-2 reveal">
-      <div class="card card-code">
-        <div class="code-header">
-          <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
-          <span class="code-filename">hola_mundo.py</span>
-        </div>
-        <pre class="code-block"><code><span class="tok-fn">print</span>(<span class="tok-str">"Hola mundo"</span>)</code></pre>
-      </div>
-      <div class="card card-explain">
-        <h3>¿Qué hace este código?</h3>
-        <p class="section-text">
-          La instrucción <code>print()</code> le dice a Python que muestre un texto en pantalla.
-          Todo lo que se escribe entre comillas dentro del paréntesis es el mensaje que aparecerá
-          como resultado. Es el primer programa que casi todos escriben al aprender a programar.
-        </p>
-      </div>
-    </div>
-
-    <div class="editor-block reveal">
-      <h3 class="editor-title">Mini editor interactivo de Python</h3>
-      <p class="section-text">Escribe una instrucción <code>print()</code> y presiona “Ejecutar” para ver el resultado.</p>
-
-      <div class="quick-examples" id="quickExamples">
-        <button class="chip" data-code='print("Hola mundo")'>Hola mundo</button>
-        <button class="chip" data-code='print("Archivo Digital - Prom 2026")'>Saludo del proyecto</button>
-        <button class="chip" data-code='print(2 + 2)'>Suma simple</button>
-        <button class="chip" data-code='print("Jeronimo Caro Alfonso")'>Mi nombre</button>
-      </div>
-
-      <div class="editor-window">
-        <div class="editor-toolbar">
-          <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
-          <span class="code-filename">editor.py</span>
-        </div>
-        <textarea id="pyInput" class="editor-textarea" spellcheck="false">print("Hola mundo")</textarea>
-        <div class="editor-actions">
-          <button id="runBtn" class="btn btn-primary btn-sm">Ejecutar</button>
-          <button id="clearBtn" class="btn btn-outline btn-sm">Limpiar</button>
-        </div>
-        <div class="editor-output">
-          <div class="editor-output-label">Salida</div>
-          <pre id="pyOutput" class="editor-output-content">&gt;&gt;&gt; Presiona "Ejecutar" para ver el resultado</pre>
-        </div>
-      </div>
-    </div>
-
-    <div class="mini-challenge reveal" id="pythonChallenge">
-      <div class="challenge-head"><div><span class="section-eyebrow">Mini juego</span><h3>Reto Python: ¿qué imprime?</h3></div><span class="challenge-score">Puntos: <b id="pyGameScore">0</b>/3</span></div>
-      <p class="section-text">Elige la salida correcta. Completa las 3 preguntas para superar el reto.</p>
-      <div class="py-question" id="pyQuestion">print("Hola")</div>
-      <div class="challenge-options" id="pyOptions"></div>
-      <p class="challenge-feedback" id="pyFeedback">Selecciona una respuesta.</p>
-      <button class="btn btn-outline btn-sm" id="pyRestart">Reiniciar reto</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 02</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Mini laboratorio de programación en Python</p></article>
-        <article><strong>Problema o necesidad</strong><p>Comprender la lógica de programación de manera práctica, comenzando con instrucciones sencillas y observando sus resultados.</p></article>
-        <article><strong>Objetivo</strong><p>Aprender conceptos básicos de Python mediante ejemplos, edición de código y ejecución de pequeños programas.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Se creó un mini editor web que interpreta ejemplos básicos de print y operaciones numéricas para simular una experiencia de programación.</p></article>
-        <article><strong>Funcionamiento</strong><p>El usuario escribe una instrucción, selecciona un ejemplo o ejecuta el código y recibe una salida en pantalla.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Interpretar entradas de texto, controlar errores y diseñar una interfaz sencilla que permita experimentar sin instalar programas.</p></article>
-        <article><strong>Conclusiones</strong><p>La práctica interactiva facilita entender que programar consiste en dar instrucciones precisas y comprobar sus resultados.</p></article>
-        <article><strong>Integrantes</strong><p>Jeronimo Caro Alfonso — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ROBOT SEGUIDOR DE LÍNEA ===================== -->
-<section id="seguidor" class="section">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">03 — Robótica autónoma</span>
-    <h2 class="section-title reveal">Robot seguidor de <span class="accent">línea</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Es un robot diseñado para seguir automáticamente una línea marcada en el suelo, generalmente
-          negra sobre un fondo blanco, utilizando sensores que detectan el contraste entre los dos colores.
-        </p>
-        <p class="section-text">
-          Sirve para aprender de forma práctica conceptos de robótica, programación, uso de sensores y
-          sistemas autónomos. Es uno de los proyectos más usados en la educación en tecnología porque
-          combina electrónica, mecánica y lógica de programación en un solo montaje.
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item">
-            <span class="spec-label">Sensores</span>
-            <span class="spec-value">Infrarrojos de reflectancia, detectan el contraste entre la línea y la superficie</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Motores</span>
-            <span class="spec-value">Motores DC controlados de forma independiente en cada rueda</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Control</span>
-            <span class="spec-value">Un microcontrolador compara las lecturas y ajusta la velocidad de cada motor</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Detección</span>
-            <span class="spec-value">Si el sensor detecta la línea, el robot corrige su dirección para mantenerse sobre ella</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/robot-seguidor-linea.png" alt="Robot seguidor de línea construido con placa de sensores, motores y ruedas amarillas" class="project-photo">
-        <span class="photo-caption">Robot seguidor de línea — proyecto</span>
-      </div>
-    </div>
-
-    <!-- JUEGO -->
-    <div class="game-block reveal">
-      <h3 class="editor-title">Simulador: mantén el robot en la línea</h3>
-      <p class="section-text">
-        Usa las flechas <strong>◀</strong> y <strong>▶</strong> del teclado (o los botones) para mantener el
-        robot sobre la línea el mayor tiempo posible, esquivando los obstáculos.
-      </p>
-
-      <div class="game-hud">
-        <div class="hud-item">Puntos: <span id="gameScore">0</span></div>
-        <div class="hud-item">Tiempo: <span id="gameTime">30</span>s</div>
-      </div>
-
-      <div class="game-stage-wrapper">
-        <canvas id="gameCanvas" width="700" height="320"></canvas>
-        <div id="gameOverlay" class="game-overlay">
-          <p id="gameOverlayText">Sigue la línea sin salirte y sin chocar</p>
-          <button id="gameStartBtn" class="btn btn-primary btn-sm">Iniciar juego</button>
-        </div>
-      </div>
-
-      <div class="game-controls">
-        <button id="gameLeft" class="btn btn-outline btn-sm">◀ Izquierda</button>
-        <button id="gameRight" class="btn btn-outline btn-sm">Derecha ▶</button>
-      </div>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 03</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Robot seguidor de línea</p></article>
-        <article><strong>Problema o necesidad</strong><p>Automatizar el desplazamiento de un robot por una ruta marcada sin que una persona tenga que dirigirlo continuamente.</p></article>
-        <article><strong>Objetivo</strong><p>Construir un robot capaz de detectar una línea y corregir su trayectoria de forma autónoma.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>El sistema combina sensores infrarrojos, motores DC y un microcontrolador que procesa las lecturas para decidir hacia dónde moverse.</p></article>
-        <article><strong>Funcionamiento</strong><p>Los sensores detectan el contraste de la pista. Según la lectura, el controlador modifica los motores para mantener el robot sobre la línea.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Calibrar los sensores, ajustar la velocidad de los motores y mantener una estructura alineada para evitar desviaciones.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto permite comprobar cómo sensores, programación y movimiento pueden trabajar juntos para lograr autonomía.</p></article>
-        <article><strong>Integrantes</strong><p>Jeronimo Caro Alfonso — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== CINTA TRANSPORTADORA ===================== -->
-<section id="cinta" class="section section-dark">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">04 — Automatización con LEGO</span>
-    <h2 class="section-title reveal">Cinta transportadora de <span class="accent">LEGO</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Una cinta transportadora es un sistema mecánico que permite mover objetos de un lugar a otro
-          de manera continua y automática, sin necesidad de trasladarlos manualmente.
-        </p>
-        <p class="section-text">
-          Se utiliza ampliamente en procesos industriales para clasificar, transportar y organizar
-          productos en líneas de producción, almacenes y sistemas de empaque. En una versión hecha con
-          LEGO, el mismo principio se recrea a pequeña escala: un motor mueve una banda apoyada sobre
-          engranajes y rodillos, trasladando piezas u objetos pequeños de un extremo a otro.
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item"><span class="spec-label">Motor</span><span class="spec-value">Genera el movimiento giratorio que impulsa toda la cinta</span></div>
-          <div class="spec-item"><span class="spec-label">Banda</span><span class="spec-value">Superficie continua sobre la que se transportan los objetos</span></div>
-          <div class="spec-item"><span class="spec-label">Engranajes</span><span class="spec-value">Transmiten y regulan la fuerza del motor hacia los rodillos</span></div>
-          <div class="spec-item"><span class="spec-label">Estructura</span><span class="spec-value">Piezas LEGO que sostienen y alinean todo el sistema</span></div>
-          <div class="spec-item"><span class="spec-label">Sensores</span><span class="spec-value">Pueden detectar objetos para detener o activar la cinta</span></div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/cinta-lego.png" alt="Cinta transportadora LEGO" class="project-photo">
-        <span class="photo-caption">Cinta transportadora LEGO — proyecto</span>
-      </div>
-    </div>
-
-    <div class="conveyor-block reveal">
-      <div class="conveyor-belt">
-        <div class="conveyor-surface"></div>
-        <div class="conveyor-roller conveyor-roller-left"></div>
-        <div class="conveyor-roller conveyor-roller-right"></div>
-        <div class="conveyor-box box-1"></div>
-        <div class="conveyor-box box-2"></div>
-        <div class="conveyor-box box-3"></div>
-      </div>
-    </div>
-
-    <div class="mini-challenge reveal" id="conveyorGame">
-      <div class="challenge-head"><div><span class="section-eyebrow">Mini juego</span><h3>Clasifica los paquetes</h3></div><span class="challenge-score">Puntos: <b id="conveyorScore">0</b></span></div>
-      <p class="section-text">Haz clic en el botón correcto antes de que cada paquete llegue al final de la cinta.</p>
-      <div class="sorting-stage"><div class="sorting-belt"></div><div class="sorting-package" id="sortingPackage">📦</div><div class="sorting-targets"><button class="sort-btn" data-type="caja">📦 Caja</button><button class="sort-btn" data-type="pieza">⚙️ Pieza</button><button class="sort-btn" data-type="sensor">🔵 Sensor</button></div></div>
-      <p class="challenge-feedback" id="conveyorFeedback">Presiona iniciar para comenzar.</p>
-      <button class="btn btn-primary btn-sm" id="conveyorStart">Iniciar juego</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 04</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Cinta transportadora de LEGO</p></article>
-        <article><strong>Problema o necesidad</strong><p>Transportar objetos de un punto a otro de manera continua, reduciendo el traslado manual y mostrando el principio de una línea automatizada.</p></article>
-        <article><strong>Objetivo</strong><p>Construir una maqueta funcional que represente el movimiento de materiales mediante una banda impulsada por un motor.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Se combinan piezas LEGO, engranajes, rodillos, una banda y un motor para crear un sistema de transporte a pequeña escala.</p></article>
-        <article><strong>Funcionamiento</strong><p>El motor transmite movimiento a los engranajes y rodillos; la banda se desplaza y lleva los objetos de un extremo al otro.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Alinear engranajes, mantener la tensión de la banda y conseguir un movimiento continuo sin atascos.</p></article>
-        <article><strong>Conclusiones</strong><p>La maqueta permite entender de forma visual cómo la mecánica y la automatización se integran en procesos de transporte.</p></article>
-        <article><strong>Integrantes</strong><p>Jeronimo Caro Alfonso — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ROBOT CON PINZAS ===================== -->
-<section id="pinza" class="section">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">05 — Manipulación robótica</span>
-    <h2 class="section-title reveal">Robot con <span class="accent">pinzas</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Un robot con pinzas es un robot equipado con un mecanismo de agarre capaz de sujetar, levantar
-          y trasladar objetos de un lugar a otro. La pinza es el "extremo" del robot que entra en
-          contacto directo con lo que se quiere manipular.
-        </p>
-        <p class="section-text">
-          Se usa en robótica educativa y en la industria para tareas como recoger piezas, clasificar
-          productos, ensamblar componentes o trasladar objetos en espacios donde sería difícil o
-          peligroso hacerlo manualmente.
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item"><span class="spec-label">Brazo robótico</span><span class="spec-value">Estructura articulada que posiciona la pinza en el espacio</span></div>
-          <div class="spec-item"><span class="spec-label">Pinza</span><span class="spec-value">Mecanismo final que abre y cierra para sujetar objetos</span></div>
-          <div class="spec-item"><span class="spec-label">Motores</span><span class="spec-value">Controlan el movimiento del brazo y el cierre de la pinza</span></div>
-          <div class="spec-item"><span class="spec-label">Sensores</span><span class="spec-value">Ayudan a detectar la presencia y posición de los objetos</span></div>
-          <div class="spec-item"><span class="spec-label">Control</span><span class="spec-value">Un microcontrolador coordina cada movimiento del sistema</span></div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/robot-pinzas.png" alt="Diseño CAD de robot con pinza construido con piezas Technic y placa micro:bit" class="project-photo">
-        <span class="photo-caption">Robot con pinzas — proyecto</span>
-      </div>
-    </div>
-
-    <div class="gripper-block reveal">
-      <h3 class="editor-title">Simulación de la pinza</h3>
-      <p class="section-text">Presiona los botones para controlar el movimiento del brazo y la pinza.</p>
-
-      <div class="gripper-stage">
-        <svg id="gripperSvg" viewBox="0 0 400 260" width="100%" height="260">
-          <line x1="200" y1="260" x2="200" y2="230" stroke="var(--line)" stroke-width="6" stroke-linecap="round"/>
-          <g id="gripperArm">
-            <rect x="185" y="130" width="30" height="100" rx="8" fill="var(--blue-mid)"/>
-            <g id="gripperClaws">
-              <path id="clawLeft" d="M200,130 C170,120 150,90 155,60" stroke="var(--blue-bright)" stroke-width="10" fill="none" stroke-linecap="round"/>
-              <path id="clawRight" d="M200,130 C230,120 250,90 245,60" stroke="var(--blue-bright)" stroke-width="10" fill="none" stroke-linecap="round"/>
-            </g>
-          </g>
-          <circle id="gripperObject" cx="200" cy="55" r="16" fill="var(--white)" stroke="var(--blue-bright)" stroke-width="3"/>
-        </svg>
-      </div>
-
-      <div class="gripper-controls">
-        <button class="btn btn-outline btn-sm" id="openClaw">Abrir pinza</button>
-        <button class="btn btn-outline btn-sm" id="closeClaw">Cerrar pinza</button>
-        <button class="btn btn-primary btn-sm" id="grabObject">Agarrar objeto</button>
-        <button class="btn btn-outline btn-sm" id="releaseObject">Soltar objeto</button>
-      </div>
-      <p id="gripperStatus" class="gripper-status">Estado: pinza abierta, sin objeto</p>
-    </div>
-
-    <div class="mini-challenge reveal" id="gripperGame">
-      <div class="challenge-head"><div><span class="section-eyebrow">Mini juego</span><h3>Misión: rescata el objeto</h3></div><span class="challenge-score">Estado: <b id="gripperMissionScore">0/3</b></span></div>
-      <p class="section-text">Completa la secuencia: abre la pinza, agarra el objeto y suéltalo para terminar la misión.</p>
-      <div class="mission-steps"><span id="stepOpen">1. Abrir</span><span id="stepGrab">2. Agarrar</span><span id="stepRelease">3. Soltar</span></div>
-      <p class="challenge-feedback" id="gripperMissionFeedback">Misión pendiente.</p>
-      <button class="btn btn-outline btn-sm" id="gripperMissionReset">Reiniciar misión</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 05</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Robot con pinzas</p></article>
-        <article><strong>Problema o necesidad</strong><p>Manipular y trasladar objetos pequeños de manera controlada, especialmente en tareas repetitivas o difíciles de realizar manualmente.</p></article>
-        <article><strong>Objetivo</strong><p>Diseñar un sistema que permita mover un brazo y una pinza para sujetar, trasladar y soltar objetos.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>El prototipo combina una estructura articulada, motores, una pinza y un sistema de control para coordinar los movimientos.</p></article>
-        <article><strong>Funcionamiento</strong><p>El usuario controla la apertura y cierre de la pinza. Al agarrar el objeto, el mecanismo lo mantiene sujeto hasta recibir la orden de soltarlo.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Lograr que la pinza cierre con precisión, coordinar los movimientos y mantener el objeto estable durante la manipulación.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto muestra cómo la robótica puede facilitar tareas de manipulación y cómo el control preciso es clave para que un mecanismo sea útil.</p></article>
-        <article><strong>Integrantes</strong><p>Jeronimo Caro Alfonso — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== CANASTA DE BALONCESTO AUTOMÁTICA ===================== -->
-<section id="canasta" class="section section-dark">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">06 — Detección electrónica de puntos</span>
-    <h2 class="section-title reveal">Canasta con puntuación <span class="accent">automática</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Es una canasta de baloncesto equipada con un sistema electrónico que detecta,
-          por sí sola, cuando la pelota entra en el aro y suma el punto en una pantalla,
-          sin que un árbitro o un compañero tenga que llevar la cuenta a mano.
-        </p>
-        <p class="section-text">
-          El truco está en la pelota: va recubierta con aluminio, un material conductor.
-          Cuando toca el aro metálico se cierra un pequeño circuito que la placa micro:bit
-          interpreta como "punto anotado".
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item"><span class="spec-label">Sensor de contacto</span><span class="spec-value">Detecta cuando la pelota conductora toca el aro</span></div>
-          <div class="spec-item"><span class="spec-label">Pelota conductora</span><span class="spec-value">Recubierta de aluminio para cerrar el circuito</span></div>
-          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Procesa la señal y controla el conteo de puntos</span></div>
-          <div class="spec-item"><span class="spec-label">Matriz LED</span><span class="spec-value">Muestra el puntaje acumulado en tiempo real</span></div>
-          <div class="spec-item"><span class="spec-label">Temporizador</span><span class="spec-value">Espera 5 segundos entre anotaciones para evitar contar dos veces el mismo lanzamiento</span></div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/canasta-baloncesto.jpg" alt="Prototipo de canasta de baloncesto con puntuación automática usando micro:bit" class="project-photo">
-        <span class="photo-caption">Canasta con puntuación automática — proyecto</span>
-      </div>
-    </div>
-
-    <div class="mini-challenge reveal" id="basketGame">
-      <div class="challenge-head">
-        <div><span class="section-eyebrow">Mini juego</span><h3>Encesta antes de que pase el tiempo</h3></div>
-        <span class="challenge-score">Puntos: <b id="basketScore">0</b></span>
-      </div>
-      <p class="section-text">
-        Presiona "¡Encestar!" justo cuando la pelota esté sobre el aro. Igual que en el
-        prototipo real, después de anotar hay que esperar 5 segundos para el siguiente intento.
-      </p>
-      <div class="basket-stage">
-        <div class="basket-ball" id="basketBall">🏀</div>
-      </div>
-      <p class="challenge-feedback" id="basketFeedback">Presiona iniciar para comenzar.</p>
-      <button class="btn btn-primary btn-sm" id="basketStart">Iniciar juego</button>
-      <button class="btn btn-outline btn-sm" id="basketShootBtn" style="display:none;">¡Encestar!</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 06</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Canasta de baloncesto con puntuación automática</p></article>
-        <article><strong>Problema o necesidad</strong><p>En los partidos escolares, llevar el conteo de puntos de forma manual genera errores y discusiones, además de restarle agilidad al juego.</p></article>
-        <article><strong>Objetivo</strong><p>Crear un sistema que detecte automáticamente cuando la pelota entra en la canasta y sume el punto sin intervención humana.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Se usa una placa micro:bit conectada al aro mediante un sensor de contacto, junto con una pelota recubierta de aluminio que actúa como conductor.</p></article>
-        <article><strong>Funcionamiento</strong><p>Al pasar la pelota de aluminio por el aro se cierra un circuito que la micro:bit detecta como punto y lo suma en la pantalla LED, esperando 5 segundos antes de contar uno nuevo.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Calibrar la sensibilidad del sensor para que solo contara contactos reales, evitar falsos positivos por rebotes y ajustar el tiempo de espera entre anotaciones.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto muestra cómo un circuito sencillo con micro:bit puede automatizar el arbitraje en actividades deportivas escolares.</p></article>
-        <article><strong>Integrantes</strong><p>Michael Torres, Rivera — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== BRUABIT — FUERZA MAGNÉTICA ===================== -->
-<section id="bruabit" class="section">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">07 — Electromagnetismo aplicado</span>
-    <h2 class="section-title reveal">BRUABIT: fuerza <span class="accent">magnética</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          La fuerza magnética suele enseñarse solo de forma teórica, lo que dificulta
-          visualizar cómo actúa realmente sobre los objetos. BRUABIT es un prototipo
-          tipo grúa que hace visible ese efecto: un electroimán controlado por micro:bit
-          atrae y suelta un objeto metálico bajo demanda.
-        </p>
-        <p class="section-text">
-          Una estructura de soporte sostiene el electroimán en la posición correcta,
-          y la placa micro:bit se encarga de activarlo o apagarlo según el programa.
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item"><span class="spec-label">Electroimán</span><span class="spec-value">Genera el campo magnético que atrae el objeto</span></div>
-          <div class="spec-item"><span class="spec-label">Brazo / soporte</span><span class="spec-value">Sostiene el electroimán en la posición correcta</span></div>
-          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Controla la activación y desactivación del imán</span></div>
-          <div class="spec-item"><span class="spec-label">Fuente de energía</span><span class="spec-value">Alimenta el circuito del electroimán</span></div>
-          <div class="spec-item"><span class="spec-label">Objeto metálico</span><span class="spec-value">Pieza que es atraída al activar el imán</span></div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/bruabit-fuerza-magnetica.jpg" alt="Prototipo BRUABIT: grúa con electroimán controlado por micro:bit" class="project-photo">
-        <span class="photo-caption">BRUABIT — Fuerza magnética — proyecto</span>
-      </div>
-    </div>
-
-    <div class="gripper-block reveal">
-      <h3 class="editor-title">Simulación del electroimán</h3>
-      <p class="section-text">Activa el electroimán para atraer el objeto metálico y desactívalo para soltarlo, igual que en el prototipo real controlado por micro:bit.</p>
-
-      <div class="magnet-stage">
-        <div class="magnet-coil">🧲</div>
-        <div class="magnet-object" id="magnetObject">⚙️</div>
-      </div>
-
-      <div class="gripper-controls">
-        <button class="btn btn-primary btn-sm" id="magnetOnBtn">Activar electroimán</button>
-        <button class="btn btn-outline btn-sm" id="magnetOffBtn">Desactivar electroimán</button>
-      </div>
-      <p id="magnetStatus" class="gripper-status">Estado: electroimán apagado, objeto en la base.</p>
-    </div>
-
-    <div class="mini-challenge reveal" id="magnetGame">
-      <div class="challenge-head">
-        <div><span class="section-eyebrow">Mini juego</span><h3>Misión: transporta la pieza metálica</h3></div>
-        <span class="challenge-score">Estado: <b id="magnetMissionScore">0/2</b></span>
-      </div>
-      <p class="section-text">Completa la secuencia: activa el electroimán para sujetar la pieza y desactívalo para soltarla en la zona de entrega.</p>
-      <div class="mission-steps"><span id="magStepOn">1. Activar y sujetar</span><span id="magStepOff">2. Soltar en la entrega</span></div>
-      <p class="challenge-feedback" id="magnetMissionFeedback">Misión pendiente: comienza activando el electroimán.</p>
-      <button class="btn btn-outline btn-sm" id="magnetMissionReset">Reiniciar misión</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 07</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>BRUABIT — Fuerza magnética</p></article>
-        <article><strong>Problema o necesidad</strong><p>La fuerza magnética suele enseñarse solo de forma teórica, lo que dificulta que los estudiantes visualicen cómo actúa sobre los objetos.</p></article>
-        <article><strong>Objetivo</strong><p>Construir un prototipo que demuestre visualmente el efecto de la fuerza magnética mediante un mecanismo controlado por micro:bit.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Una estructura tipo grúa sostiene un electroimán controlado por micro:bit, que atrae o suelta un objeto metálico según la programación.</p></article>
-        <article><strong>Funcionamiento</strong><p>Al activarse el programa, la micro:bit envía la señal que activa el electroimán y genera el campo magnético que atrae el objeto; al desactivarse, el objeto se suelta.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Controlar la intensidad del campo magnético, mantener estable la estructura de soporte y sincronizar el tiempo de activación con la placa.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto permitió comprobar de forma práctica el principio del electromagnetismo aplicado a un sistema controlado por microcontrolador.</p></article>
-        <article><strong>Integrantes</strong><p>Gabriela y Jose — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ROBOT ESQUIVA OBSTÁCULOS (FERIA DE TECNOLOGÍA) ===================== -->
-<section id="feria" class="section section-dark">
-  <div class="section-inner">
-    <span class="section-eyebrow reveal">08 — Robótica autónoma</span>
-    <h2 class="section-title reveal">Robot esquiva <span class="accent">obstáculos</span></h2>
-
-    <div class="grid-2">
-      <div class="reveal">
-        <p class="section-text">
-          Robot construido con micro:bit y ruedas independientes, presentado en la Feria
-          de Tecnología. Su tarea es recorrer una pista llena de conos sin chocar, tomando
-          la decisión de girar hacia un lado u otro según lo que detecta en su camino.
-        </p>
-        <p class="section-text">
-          A diferencia del seguidor de línea (que sigue una ruta marcada), este robot
-          debe reaccionar a obstáculos que no siguen un patrón fijo, lo que lo obliga a
-          tomar decisiones en cada tramo del recorrido.
-        </p>
-        <div class="specs-grid">
-          <div class="spec-item"><span class="spec-label">Sensores de proximidad</span><span class="spec-value">Detectan la distancia a los conos cercanos</span></div>
-          <div class="spec-item"><span class="spec-label">Motores DC</span><span class="spec-value">Controlan el giro independiente de cada rueda</span></div>
-          <div class="spec-item"><span class="spec-label">Placa micro:bit</span><span class="spec-value">Procesa las lecturas y decide la maniobra a seguir</span></div>
-          <div class="spec-item"><span class="spec-label">Chasis con ruedas</span><span class="spec-value">Estructura que soporta el recorrido entre los conos</span></div>
-        </div>
-      </div>
-
-      <div class="card card-image-frame reveal">
-        <img src="assets/robot-feria-conos.jpg" alt="Robot con micro:bit recorriendo una pista de conos en la Feria de Tecnología" class="project-photo">
-        <span class="photo-caption">Robot esquiva obstáculos — Feria de Tecnología</span>
-      </div>
-    </div>
-
-    <div class="editor-block reveal">
-      <h3 class="editor-title">Simulador: esquiva los conos</h3>
-      <p class="section-text">El robot detecta un cono a un lado de la pista. Elige hacia qué lado debe girar para esquivarlo sin salirse del camino.</p>
-      <div class="cone-stage">
-        <div class="cone-track">
-          <div class="cone-icon" id="coneIcon">🟡</div>
-          <div class="cone-robot">🤖</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mini-challenge reveal" id="feriaChallenge">
-      <div class="challenge-head">
-        <div><span class="section-eyebrow">Mini juego</span><h3>Reto: esquiva los conos</h3></div>
-        <span class="challenge-score">Puntos: <b id="feriaScore">0</b>/5</span>
-      </div>
-      <p class="section-text">Indica hacia qué lado debe girar el robot para esquivar cada cono. Completa las 5 rondas.</p>
-      <div class="challenge-options" id="feriaOptions">
-        <button class="challenge-option" data-side="izquierda">◀ Izquierda</button>
-        <button class="challenge-option" data-side="derecha">Derecha ▶</button>
-      </div>
-      <p class="challenge-feedback" id="feriaFeedback">Ronda 1 de 5</p>
-      <button class="btn btn-outline btn-sm" id="feriaRestart">Reiniciar reto</button>
-    </div>
-
-    <div class="project-dossier reveal">
-      <div class="dossier-heading"><span>Ficha del proyecto</span><small>Proyecto 08</small></div>
-      <div class="dossier-grid">
-        <article><strong>Nombre del proyecto</strong><p>Robot esquiva obstáculos con micro:bit</p></article>
-        <article><strong>Problema o necesidad</strong><p>Los robots que se mueven en espacios con objetos necesitan detectar obstáculos para no chocar y completar un recorrido sin ayuda manual.</p></article>
-        <article><strong>Objetivo</strong><p>Programar un robot capaz de recorrer un circuito con conos, esquivándolos de forma autónoma.</p></article>
-        <article><strong>Descripción de la solución tecnológica</strong><p>Robot con base de ruedas, motores DC y una placa micro:bit programada para detectar y rodear obstáculos en su trayecto.</p></article>
-        <article><strong>Funcionamiento</strong><p>El robot avanza por el circuito; al acercarse a un cono, ajusta el giro de sus ruedas para esquivarlo y continúa su recorrido.</p></article>
-        <article><strong>Dificultades encontradas</strong><p>Calibrar la distancia de detección, ajustar la velocidad de giro y lograr que completara el recorrido sin salirse del camino.</p></article>
-        <article><strong>Conclusiones</strong><p>El proyecto evidenció cómo la programación de sensores permite que un robot tome decisiones autónomas frente a obstáculos.</p></article>
-        <article><strong>Integrantes</strong><p>Juan, Hugo y Jeronimo — 11D</p></article>
-      </div>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<!-- Botones anterior / siguiente -->
-<div class="section-nav-arrows">
-  <button id="prevSectionBtn" class="arrow-btn" aria-label="Sección anterior">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
-  <span id="sectionIndicator" class="section-indicator">01 / 09</span>
-  <button id="nextSectionBtn" class="arrow-btn" aria-label="Siguiente sección">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
-</div>
-
-<footer class="footer">
-  <p class="footer-title">Archivo Digital — Prom 2026</p>
-  <p class="footer-author">Jeronimo Caro Alfonso — 11D</p>
-  <p class="footer-quote">“El final de una etapa es el comienzo de una nueva historia.”</p>
-</footer>
-
-<script src="script.js"></script>
+  <form id="form">
+    <textarea id="input" rows="1" placeholder="Escribí tu mensaje..."></textarea>
+    <button id="send" type="submit">Enviar</button>
+  </form>
+
+<script>
+  const chatEl = document.getElementById("chat");
+  const emptyEl = document.getElementById("empty");
+  const formEl = document.getElementById("form");
+  const inputEl = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+  const searchToggle = document.getElementById("searchToggle");
+  // Worker de Cloudflare ya configurado para esta versión de la app.
+  const WORKER_URL = "https://nebula.jeronimocaroalfonso3.workers.dev";
+
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("chatHistory") || "[]"); } catch {}
+  if (history.length) {
+    emptyEl.remove();
+    history.forEach((h) => addBubble(h.role === "user" ? "user" : "bot", h.text));
+  }
+
+  function saveHistory() {
+    try { localStorage.setItem("chatHistory", JSON.stringify(history)); } catch {}
+  }
+
+  function addBubble(kind, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + kind;
+    div.textContent = text;
+    chatEl.appendChild(div);
+    chatEl.scrollTop = chatEl.scrollHeight;
+    return div;
+  }
+
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+  });
+
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    if (emptyEl.parentNode) emptyEl.remove();
+    addBubble("user", message);
+    history.push({ role: "user", text: message });
+    saveHistory();
+
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    sendBtn.disabled = true;
+    const thinking = addBubble("bot", "Pensando...");
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          history: history.slice(0, -1), // sin el mensaje que acaba de mandar
+          useSearch: searchToggle.checked,
+        }),
+      });
+      const data = await res.json();
+      thinking.remove();
+
+      if (!res.ok || data.error) {
+        addBubble("error", data.error || "Ocurrió un error.");
+      } else {
+        addBubble("bot", data.reply);
+        history.push({ role: "assistant", text: data.reply });
+        saveHistory();
+      }
+    } catch (err) {
+      thinking.remove();
+      addBubble("error", "No pude conectar con el servidor. Revisá el Worker URL.");
+    } finally {
+      sendBtn.disabled = false;
+    }
+  });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+</script>
 </body>
 </html>
-!
